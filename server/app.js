@@ -17,7 +17,8 @@ let connections = [];
 // ON CONNECT
 io.on('connection', (socket) => {
 
-    // CHeck if the app is mounted
+    /* DEBUG */
+    // Check if the app is mounted
     socket.on('MOUNTED', (data) => {
         // emit event to myself
         io.emit('MOUNTED', data)
@@ -25,12 +26,23 @@ io.on('connection', (socket) => {
 
     console.log(`SOCKET ID : ${socket.id}`);
 
-    // GET THE LIST OF USERS
-    socket.on('LIST_OF_USERS', (data) => {
+    // GET THE STORED USERS
+    socket.on('STORED_USER', (data) => {
         console.log(`DATA from LIST OF USERS : ${data}`)
-        users = data
+        socket.username = data
+        // Push data into users array
+        users.push(socket.username)
+        updateUsernames()
+        // SEND THE LIST OF USERS
         console.log(`LIST OF USERS : ${users}`)
     })
+
+    const updateUsernames = () => {
+        socket.broadcast.emit('LIST_OF_USERS', users)
+    }
+
+    /* // SEND THE LIST OF USERS
+    socket.emit('LIST_OF_USERS', users) */
 
     // Connected USERS
     socket.emit('CONNECTED_USERS', Object.keys(io.sockets.connected).length)
