@@ -26,10 +26,27 @@
           </v-form>
     </div>
     <div v-else>
-        test
+        It works !
     </div>
     <v-toolbar class="elevation-0">
-        <v-toolbar-side-icon></v-toolbar-side-icon>
+            <!-- Menu with the list of users -->
+            <v-menu
+        transition="slide-x-transition"
+        bottom
+        right
+      >
+      <v-toolbar-side-icon slot="activator"></v-toolbar-side-icon>
+  
+        <v-list>
+          <v-list-tile
+            v-for="(user, i) in fetched_users"
+            :key="i"
+          >
+            <v-list-tile-title>{{ user.user }}</v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
+        <!-- User list end -->
         <span>SUPER</span>
         <span class="font-weight-light">CHAT ROOM</span>
         <v-spacer></v-spacer>
@@ -41,31 +58,31 @@
         <!-- Chat box -->
     <v-card id="chatbox" class="card-body">
         <!-- Alert Broadcast User is connected/disconnected -->
-        <div v-if="connected">
+        <div>
             <div v-for="(infos, index) in info" :key="index">
-            <v-alert
+            <v-alert v-if="joined"
         v-model="alert"
         dismissible
         type="info"
         color="indigo lighten-1"
       >
-        {{infos.user}} joined the chat.
+        {{infos.user}} {{infos.type}} the chat.
       </v-alert>
-      <div v-if="connected">
-      <v-alert v-if="!connected"
+      <div>
+      <v-alert v-if="leaved"
         v-model="alert"
         dismissible
         type="info"
         color="indigo lighten-1"
       >
-        {{infos.user}} left the chat.
+        {{infos.user}} {{infos.type}} the chat.
       </v-alert>
       </div>
         </div>
         </div>
         <div class="messages" v-for="(msg, index) in messages" :key="index">
             <v-list>
-                <v-chip label class="font-weight-bold">{{ msg.user }} : </v-chip>
+                <span class="font-weight-bold">{{ msg.user }} : </span>
                 <span class="font-weight-light">{{ msg.message }}</span>
             </v-list>
             <v-divider></v-divider>
@@ -152,11 +169,13 @@ export default {
         return {
             user: null,
             users: [],
+            fetched_users: [],
             message: null,
             messages: [],
             info: [], // Information about users leaving and joining
             connections: 0, // Nb of sockets on the server
-            connected: true, // If user is connected show something
+            joined: false, // If user joined show notification
+            leaved: false, // If user leaved show notification
             typing: false, // Show when user is typing
             show: false, // 
             alert: true, // alert popup
@@ -187,6 +206,13 @@ export default {
         addUser() {
             this.show = true
             this.socket.emit('JOINED', this.user)
+            this.socket.on('STORED_USER',
+                this.users.push({user: this.user})
+            )
+            this.socket.emit('STORED_USER', this.users)
+            /* // Send to the server the Array of users
+            this.socket.emit('LIST_OF_USERS', this.users) */
+            this.joined = true
         },
         // Send message with username and message
         sendMessage() {
@@ -195,10 +221,11 @@ export default {
                 user: this.user,
                 message: this.message
             });
+            // Scroll to the bottom to see the last message
+            let chatBox = document.getElementById('chatbox');
+            chatBox.scrollTop = chatBox.scrollHeight
             // Errase the message so the user can type a new message
             this.message = null
-            // this.socket.emit('JOINED', this.user)
-            // this.user = null
         }
     },
     watch: {
@@ -209,9 +236,12 @@ export default {
         }
     },
     created() {
+        // User leaved
         window.onbeforeunload = () => {
             this.socket.emit('LEAVED', this.user)
         }
+
+        /* DEBUG */
         // Send to the server when the vue is mounted 
         this.socket.emit('MOUNTED', 'SUCCESSFULY MOUNTED')
         // Listen and console log the message from the server
@@ -219,11 +249,10 @@ export default {
             console.log(data)
         })
 
-        // Send to the server the Array of users
-        this.socket.emit('LIST_OF_USERS', this.users)
         // Show a list of users
         this.socket.on('LIST_OF_USERS', (data) => {
-            this.users = data
+            this.fetched_users = data
+            console.log(`Fetched users from list of users : ${this.fetched_users}`)
         })
 
         // Number of Connections
@@ -241,8 +270,6 @@ export default {
                 // Fetch messages
                 console.log(`Messages : ${element.message}`)
             });
-            let chatBox = document.getElementById('chatbox');
-            chatBox.scrollTop = chatBox.scrollHeight
         });
 
         this.socket.on('LIST_OF_USERS', (data) => {
@@ -269,12 +296,12 @@ export default {
 
         // JOINED
         this.socket.on('JOINED', (data) => {
-        this.info.push({ user: data, type: 'JOINED'})
+        this.info.push({ user: data, type: 'joined'})
         })
 
         // LEAVED
         this.socket.on('LEAVED', (data) => {
-        this.info.push({ user: data, type: 'LEAVED'})
+        this.info.push({ user: data, type: 'leaved'})
         })
         
     }
@@ -284,6 +311,6 @@ export default {
 <style>
 #chatbox {
   height: 200px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 </style>
