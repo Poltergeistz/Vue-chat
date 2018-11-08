@@ -29,8 +29,7 @@
             <v-btn class="white--text" color="indigo lighten-1" @click="login">
                 Login
             </v-btn>
-            <a>Forgot Your Password?</a>
-            <!-- <span><a>Return to Home</a></span> -->
+            <a to="/forgot-password">Forgot Your Password?</a>
         </v-form>
         </v-container>
     </v-card>
