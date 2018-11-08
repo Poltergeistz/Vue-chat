@@ -13,16 +13,31 @@
     <v-content>
       <Chat/>
     </v-content>
+    <v-content>
+      <Login/>
+    </v-content>
+    <v-content>
+      <Register/>
+    </v-content>
+    <v-content>
+      <ForgotPassword/>
+    </v-content>
   </v-app>
 </template>
 
 <script>
 import Chat from './components/Chat'
+import Login from './components/Login'
+import Register from './components/Register'
+import ForgotPassword from './components/ForgotPassword'
 
 export default {
   name: 'App',
   components: {
-    Chat
+    Chat,
+    Login,
+    Register,
+    ForgotPassword
   },
   data () {
     return {

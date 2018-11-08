@@ -42,7 +42,7 @@
             v-for="(user, i) in fetched_users"
             :key="i"
           >
-            <v-list-tile-title>{{ user.user }}</v-list-tile-title>
+            <v-list-tile-title><v-icon>fas fa-user-astronaut</v-icon>{{ user.user }}</v-list-tile-title>
           </v-list-tile>
         </v-list>
       </v-menu>
@@ -222,8 +222,7 @@ export default {
                 message: this.message
             });
             // Scroll to the bottom to see the last message
-            let chatBox = document.getElementById('chatbox');
-            chatBox.scrollTop = chatBox.scrollHeight
+            
             // Errase the message so the user can type a new message
             this.message = null
         }
@@ -270,6 +269,9 @@ export default {
                 // Fetch messages
                 console.log(`Messages : ${element.message}`)
             });
+            let chatBox = document.getElementById('chatbox');
+            chatBox.scrollTop = chatBox.scrollHeight
+            // document.getElementById('chatbox').scrollTo(0, document.getElementById('chatbox').scrollHeight)
         });
 
         this.socket.on('LIST_OF_USERS', (data) => {
