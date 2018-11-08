@@ -26,9 +26,7 @@
           </v-form>
     </div>
     <div v-else>
-        It works !
-    </div>
-    <v-toolbar class="elevation-0">
+        <v-toolbar class="elevation-0">
             <!-- Menu with the list of users -->
             <v-menu
         transition="slide-x-transition"
@@ -120,8 +118,9 @@
           </v-layout>
           </v-form>
       </v-card-text>
-      </v-container>
       <!-- Message & User Form end -->
+    </div>
+      </v-container>
       <!-- Footer -->
       <v-footer
       dark

@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <v-toolbar app>
+      <v-icon>fas fa-user-astronaut</v-icon>
       <v-toolbar-title class="headline text-uppercase">
         <span>SUPER</span>
         <span class="font-weight-light">CHAT 2000</span>
@@ -10,7 +11,6 @@
       <v-btn flat to="/login">Login</v-btn>
       <v-btn flat to="/register">Register</v-btn>
     </v-toolbar>
-
     <v-content>
       <router-view/>
     </v-content>
