@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
 
     // GET THE STORED USERS
     socket.on('STORED_USER', (data) => {
-        console.log(`DATA from LIST OF USERS : ${data}`)
+        console.log(`DATA from LIST OF USERS : ${data[0]}`)
         socket.username = data
         // Push data into users array
         users.push(socket.username)
